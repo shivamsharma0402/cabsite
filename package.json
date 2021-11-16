@@ -1,0 +1,21 @@
+{
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.0.12",
+    "nodemon": "^2.0.14"
+  },
+  "scripts": {
+    "start": "nodemon server.js",
+    "run": "node server.js"
+  },
+  "name": "cab",
+  "version": "1.0.0",
+  "main": "server.js",
+  "author": "shivamsharma",
+  "license": "ISC",
+  "description": ""
+}
