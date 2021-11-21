@@ -16,6 +16,7 @@ const router = express.Router();
 router.route('/signup').post(signup);
 router.route('/login').get(login);
 router.route('/userDetails').post(isAuth, userDetails);
+// router.route('/resetPasswordLink').put(resetPasswordLinkSend);
 
 
 module.exports = router;

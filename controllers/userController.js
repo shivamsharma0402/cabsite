@@ -1,6 +1,14 @@
 const User = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require('jsonwebtoken');
+const nodeMailer = require('nodemailer');
+const sendgridTransport = require('nodemailer-sendgrid-transport');
+
+const transporter = nodeMailer.createTransport(sendgridTransport({
+  auth: {
+    api_key: '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'
+  }
+}));
 
 exports.signup = async (req,res,next)=>{
   const { email, name, password, userid } = req.body;
@@ -15,7 +23,12 @@ exports.signup = async (req,res,next)=>{
       userid: userid
     });
     await user.save();
-    console.log(res);
+    await transporter.sendMail({
+      to: email,
+      from: 'er.shivam.webdev@gmail.com',
+      subject: 'SignUp succeeded!!',
+      html: '<h1>Your signup to my cab is succeded!</h1>'
+    });
     return res.status(201).json({ message: 'user created successfully', data: user });
   } catch(err){
     if(!err.statusCode) {
@@ -84,3 +97,26 @@ exports.login = async (req,res,next)=>{
     }
   
   };
+
+  exports.resetPasswordLinkSend = async (req,res,next)=>{
+    const { email } = req.body;
+    try {
+      const user = await User.findOne({ email });
+      if(user) {
+        
+      }
+      await user.save();
+      return res.status(201).json({ message: 'details added', data: user });
+    }
+    catch (err) {
+      if(!err.statusCode) {
+        console.log(err.statusCode);
+        err.statusCode=500;
+      }
+      next(err);
+    }
+  
+  };
+
+
+
