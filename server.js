@@ -1,5 +1,4 @@
 const express = require("express");
-const userRoutes = require("./routes/user.routes");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const dotenv = require('dotenv');
@@ -7,6 +6,8 @@ require('dotenv').config();
 
 const connectDB = require('./configs/db');
 const errorHandler = require('./utils/errorHandler');
+const userRoutes = require("./routes/user.routes");
+// const cabRoutes = require("./routes/cab.routes");
 
 const app=express();
 
@@ -20,7 +21,7 @@ const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());
 
 app.use('/',userRoutes);
-app.use('/',cabRoutes);
+// app.use('/',cabRoutes);
 
 app.use(errorHandler);
 

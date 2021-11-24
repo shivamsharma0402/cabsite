@@ -1,4 +1,5 @@
 const User = require("../models/user.model");
+const UserDetails = require("../models/userdetails.model");
 const bcrypt = require("bcryptjs");
 const jwt = require('jsonwebtoken');
 const nodeMailer = require('nodemailer');
@@ -11,16 +12,15 @@ const transporter = nodeMailer.createTransport(sendgridTransport({
 }));
 
 exports.signup = async (req,res,next)=>{
-  const { email, name, password, userid } = req.body;
-  console.log( email, name, password, userid );
+  const { email, password, userid } = req.body;
+  console.log( email, password, userid );
   const hashedPwd = await bcrypt.hash(password,12);
 
   try{
     const user = new User({
       email: email,
-      name: name,
       password: hashedPwd,
-      userid: userid
+      userid: userid,
     });
     await user.save();
     await transporter.sendMail({
@@ -59,7 +59,8 @@ exports.login = async (req,res,next)=>{
   }
   const token = jwt.sign({
     email: loadedUser.email,
-    userid: loadedUser.userid
+    userid: loadedUser.userid,
+    _id: loadedUser._id
   }, 'somecretsecretfffffffffff',
   {expiresIn: '1h'});
   res.status(200).json({ token: token, username: loadedUser.userid});
@@ -74,19 +75,24 @@ exports.login = async (req,res,next)=>{
   };
 
   exports.userDetails = async (req,res,next)=>{
-    const { firstname, lastname, age, gender, usualtype } = req.body;
-    const loadedUserid = req.userid;
+    const { firstname, lastname, age, gender, dob, usualtype } = req.body;
+    const loadedUser = req.user;
+    console.log("loadedUserid", loadedUser);
+
     try {
-      const user = await User.findOne({ userid: loadedUserid });
-      if(user) {
-        user.name.firstname = firstname;
-        user.name.lastname = lastname;
-        user.age = age;
-        user.gender = gender;
-        user.usualtype = usualtype;
-      }
-      await user.save();
-      return res.status(201).json({ message: 'details added', data: user });
+      const userDetails = await new UserDetails({ 
+        userid : req.user._id,
+        name: {
+          firstname : firstname,
+          lastname : lastname,
+      },
+        age : age,
+        gender : gender,
+        dob : dob,
+        usualtype : usualtype,
+      });
+      await userDetails.save();
+      return res.status(201).json({ message: 'details added', data: userDetails });
     }
     catch (err) {
       if(!err.statusCode) {
